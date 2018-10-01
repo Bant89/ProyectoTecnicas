@@ -10,6 +10,7 @@ namespace Tecnicas
     {
         public static List<Materia> listaMateria = new List<Materia>();
         public static List<Estudiante> listaEstudiante = new List<Estudiante>();
+
         public static int contadorMateria = 0;
         static void Main(string[] args)
         {
@@ -25,7 +26,7 @@ namespace Tecnicas
             estudiante.usuario = Console.ReadLine();
             Console.Clear();
             Console.WriteLine("Introduzca la contraseña: ");
-            estudiante.contrasena = Console.ReadLine();           
+            estudiante.contrasena = Console.ReadLine();
             bool nombre = true;
             string nombreEstudiante = "";
             do
@@ -112,7 +113,8 @@ namespace Tecnicas
                 Console.WriteLine("2- Estudiante");
                 Console.WriteLine("3- Registrar");
                 Console.WriteLine("4- Listar estudiantes");
-                Console.WriteLine("5- Salir");
+                Console.WriteLine("5- Profesor");
+                Console.WriteLine("6- Salir");
                 op = Console.ReadLine();
                 switch (op)
                 {
@@ -130,11 +132,15 @@ namespace Tecnicas
                     case "4":
                         MostrarEstudiantes(listaEstudiante, 1);
                         break;
+
+                    case "5":
+                        MenuProfesor();
+                        break;
                     default:
                         break;
                 }
                 Console.Clear();
-            } while (op != "5");
+            } while (op != "6");
             return;
         }
 
@@ -564,6 +570,7 @@ namespace Tecnicas
             return;
 
         }
+
         public static void SeleccionarEstudiante(int id)
         {
             Estudiante estudiante = listaEstudiante.FirstOrDefault(e => e.id == id);
@@ -596,11 +603,11 @@ namespace Tecnicas
             return;
         }
 
-        public static void CalificarMaterias(List<Estudiante>lista, Estudiante estudiante)
+        public static void CalificarMaterias(List<Estudiante> lista, Estudiante estudiante)
         {
             int op = -1;
             do
-            {              
+            {
                 string res = "";
                 bool esNumero = true;
                 do
@@ -611,7 +618,7 @@ namespace Tecnicas
                     esNumero = ValidarNumeros(res);
                 } while (esNumero);
                 op = Convert.ToInt32(res);
-                PonerCalificacion(op,estudiante,lista);
+                PonerCalificacion(op, estudiante, lista);
             } while (op != 0);
             CalcularIndice(estudiante);
             GradoHonor(estudiante);
@@ -768,7 +775,7 @@ namespace Tecnicas
         public static void GradoHonor(Estudiante estudiante)
         {
             bool reprobado = false;
-            foreach(Materia m in estudiante.Materias)
+            foreach (Materia m in estudiante.Materias)
             {
                 if (m.letra == "D" || m.letra == "F")
                 {
@@ -826,5 +833,227 @@ namespace Tecnicas
             }
             return false;
         }
+
+
+
+        //todo lo relacionado con el profesor aqui modificado el 10/7/2018
+
+        public static List<Profesor> listaProfesor = new List<Profesor>();
+        public static int contadorProfesor = 0;
+
+        public static void MenuProfesor()
+        {
+            string op = "";
+            do
+            {
+                MostrarProfesores(listaProfesor, 1);
+                Console.WriteLine("Que desea hacer en el menu de profesores");
+                Console.WriteLine("1- Crear profesor");
+                Console.WriteLine("2- Modificar profesor");
+                Console.WriteLine("3- Eliminar profesor");
+                Console.WriteLine("4- Salir");
+                op = Console.ReadLine();
+                switch (op)
+                {
+                    case "1":
+                        CrearProfesor();
+                        break;
+                    case "2":
+                        EditarProfesor();
+                        break;
+                    case "3":
+                        EliminarProfesor();
+                        break;
+                    default:
+                        break;
+                }
+
+            } while (op != "4");
+            Console.ReadKey();
+            return;
+        }
+
+        public static void MostrarProfesores(List<Profesor> profesores, int inicio)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Cantidad de profesores registrados: {0}", profesores.Count());
+            Console.WriteLine("\n");
+            Console.SetCursorPosition(0, inicio);
+            Console.Write("Nombre");
+            Console.SetCursorPosition(20, inicio);
+            Console.Write("Apellido");
+            Console.SetCursorPosition(40, inicio);
+            Console.Write("ID");
+            foreach (Profesor e in profesores)
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(0, inicio + 1);
+                Console.Write(e.profesorNombre);
+                Console.SetCursorPosition(20, inicio + 1);
+                Console.Write(e.profesorApellido);
+                Console.SetCursorPosition(40, inicio + 1);
+                Console.Write(e.profesorId);
+                inicio++;
+            }
+            Console.WriteLine("\n");
+            return;
+        }
+
+        public static void CrearProfesor()
+        {
+            Profesor profesor = new Profesor();
+            bool pruebaProfesor = true;
+            string nombreProfesor = "";
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("Escriba el nombre del profesor: ");
+                nombreProfesor = Console.ReadLine();
+                pruebaProfesor = ValidarTexto(nombreProfesor);
+            } while (pruebaProfesor);
+            profesor.profesorNombre = nombreProfesor;
+            pruebaProfesor = true;
+            string apellidoProfesor = "";
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("Escriba el apellido del profesor: ");
+                apellidoProfesor = Console.ReadLine();
+                pruebaProfesor = ValidarTexto(apellidoProfesor);
+            } while (pruebaProfesor);
+            profesor.profesorApellido = apellidoProfesor;
+            contadorProfesor++;
+            profesor.profesorId = contadorProfesor;
+            listaProfesor.Add(profesor);
+            Console.WriteLine("Profesor agregado!");
+            Console.ReadKey();
+            return;
+        }
+
+        public static void EditarProfesor()
+        {
+            bool prueba;
+            string valor = "";
+            do
+            {
+                do
+                {
+                    Console.Clear();
+                    MostrarProfesores(listaProfesor, 1);
+                    Console.WriteLine("Introduzca el ID del profesor a editar: ");
+                    valor = Console.ReadLine();
+                    prueba = ValidarNumeros(valor);
+                } while (prueba);
+            } while (valor == "");
+            int val = Int32.Parse(valor);
+            var e = listaProfesor.FirstOrDefault(c => c.profesorId == val);
+            List<Profesor> lista = new List<Profesor>();
+            lista.Add(e);
+            if (e != null)
+            {
+                string res = "";
+                while (res != "0")
+                {
+                    MostrarProfesores(lista, 1);
+
+                    Console.WriteLine("Introduzca el campo que desea modificar o 0 si no desea modificar mas nada: ");
+                    res = Console.ReadLine();
+                    res = res.ToUpper();
+
+                    if (res == "0")
+                        break;
+                    while (res != "NOMBRE" && res != "APELLIDO" && res != "0")
+                    {
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Introduzca un campo valido (nombre, apellido o 0 para salir)");
+                        res = Console.ReadLine();
+                        res = res.ToUpper();
+                    }
+                    if (res == "0")
+                        break;
+                    if (res.Contains("NOMBRE"))
+                    {
+                        bool pruebaProfesor = true;
+                        string nombreProfesor = "";
+                        do
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Escriba el nombre del profesor: ");
+                            nombreProfesor = Console.ReadLine();
+                            pruebaProfesor = ValidarTexto(nombreProfesor);
+                        } while (pruebaProfesor);
+                        e.profesorNombre = nombreProfesor;
+                    }
+                    else if (res.Contains("APELLIDO"))
+                    {
+                        bool pruebaProfesor = true;
+                        string apellidoProfesor = "";
+                        do
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Escriba el apellido del profesor: ");
+                            apellidoProfesor = Console.ReadLine();
+                            pruebaProfesor = ValidarTexto(apellidoProfesor);
+                        } while (pruebaProfesor);
+                        e.profesorApellido = apellidoProfesor;
+                    }
+                    
+                }
+                Console.WriteLine("Se ha completado la modificacion.");
+            }
+            else
+            {
+                Console.WriteLine("El profesor no existe. Volviendo al menu anterior.");
+            }
+            Console.ReadKey();
+            Console.Clear();
+            return;
+        }
+
+        public static void EliminarProfesor()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            string res = "";
+            bool esNumero = true;
+            do
+            {
+                Console.Clear();
+                MostrarProfesores(listaProfesor, 1);
+                Console.WriteLine("Introduzca el ID del profesor que desea borrar");
+                res = Console.ReadLine();
+                esNumero = ValidarNumeros(res);
+            } while (esNumero);
+            int id = Convert.ToInt32(res);
+            Console.Clear();
+            Profesor profesor = listaProfesor.FirstOrDefault(e => e.profesorId == id);
+            List<Profesor> lista = new List<Profesor>();
+            lista.Add(profesor);
+            if (profesor != null)
+            {
+                MostrarProfesores(lista, 1);
+                string respuesta = "";
+                Console.WriteLine("Esta seguro que desea borrar el siguiente profesor (si/no): ");
+                respuesta = Console.ReadLine();
+                respuesta = respuesta.ToLower();
+                if (respuesta.Contains("si"))
+                {
+                    listaProfesor.Remove(profesor);
+                    Console.WriteLine("El profesor ha sido borrado satisfactoriamente.");
+                }
+                else
+                {
+                    Console.WriteLine("La operacion ha sido cancelada.");
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("El profesor no existe");
+            }
+            return;
+        }
     }
 }
+
